@@ -5,20 +5,28 @@ import ThoughtList from '../components/ThoughtList';
 import FriendList from '../components/FriendList';
 
 import { useQuery } from '@apollo/react-hooks';
-import { QUERY_USER } from '../utils/queries';
+import { QUERY_USER, QUERY_ME } from '../utils/queries';
 
 
 const Profile = () => {
   const { username: userParam } = useParams();
 
-  const { loading, data } = useQuery(QUERY_USER, {
+  const { loading, data } = useQuery(userParam ? QUERY_USER : QUERY_ME, {
     variables: { username: userParam }
   });
 
-  const user = data?.user || {};
+  const user = data?.me || data?.user || {};
 
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if (!user?.username) {
+    return (
+      <h4>
+        You need to be logged in to see this page. Use the navigation links above to sign up or log in!
+      </h4>
+    );
   }
 
   return (
